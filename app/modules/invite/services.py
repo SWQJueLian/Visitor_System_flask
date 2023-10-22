@@ -56,11 +56,10 @@ def invite_visitor_arrive(invite_id, status):
     invite: Invite = db.session.execute(
         sa.select(Invite).where(Invite.id == invite_id).options(load_only(Invite.status, Invite.visit_date))).scalar()
 
-    current_datetime = datetime.now(pytz.timezone('Asia/Shanghai'))
-
-    if invite.visit_date.date() != current_datetime.date():
-        # raise BusinessException(detail='来访日期与当前日期不相等')
-        pass
+    ch_tz = pytz.timezone('Asia/Shanghai')
+    # 把时区添加上去，因为取出来又不带时区信息。
+    if ch_tz.localize(invite.visit_date).date() != datetime.now(ch_tz).date():
+        raise Exception('来访日期与当前日期不相等')
     invite.status = status
     db.session.commit()
 
