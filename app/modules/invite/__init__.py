@@ -5,7 +5,8 @@ from .apis import (
     InviteListApi,
     InviteDetailApi,
     InviteCreateApi,
-    InviteUpdateApi
+    InviteUpdateApi,
+    InviteStatusUpdateApi
 )
 
 invite_bp = Blueprint('invite', __name__)
@@ -17,3 +18,4 @@ api.add_resource(InviteListApi, '/')
 api.add_resource(InviteDetailApi, '/<invite_id>/')
 api.add_resource(InviteCreateApi, '/create/')
 api.add_resource(InviteUpdateApi, '/<invite_id>/')
+api.add_resource(InviteStatusUpdateApi, '/<invite_id>/status_update/')
