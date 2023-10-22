@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask_restful import Api
 
+from utils.funstools import output_api_json
 from .apis import (
     InviteListApi,
     InviteDetailApi,
@@ -12,6 +13,9 @@ from .apis import (
 invite_bp = Blueprint('invite', __name__)
 
 api = Api(invite_bp)
+
+# 其他： 统一api json输出格式
+api.representation("application/json")(output_api_json)
 
 # 为了兼容之前写好的前端，url结尾特意加上/，因为django的是要加的。。。
 api.add_resource(InviteListApi, '/')
