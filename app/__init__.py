@@ -5,6 +5,7 @@ from flask import Flask
 from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from redis import Redis
 from sqlalchemy.exc import OperationalError
 
 from app.settings import constants
@@ -27,6 +28,8 @@ sys.path.append(os.path.join(BASE_DIR, "../common"))
 # 调用session_options传递自己的Session类，实现读写分离
 db = SQLAlchemy()
 
+# redis
+redis_cli: Redis = None
 
 def create_flask_app(env) -> Flask:
     """
@@ -83,6 +86,15 @@ def register_extra(app: Flask):
 
     # 初始化数据库
     db.init_app(app)
+
+    # 初始化redis
+    global redis_cli
+    app.redis_cli = Redis(
+        host=app.config["REDIS_HOST"],
+        port=app.config["REDIS_PORT"],
+        db=app.config["REDIS_SELECT_DB"],
+        decode_responses=True  # 取出来默认decode，就不用自己decode了...
+    )
 
     # 数据迁移
     Migrate(app, db)

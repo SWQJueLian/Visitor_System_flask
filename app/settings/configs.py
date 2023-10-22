@@ -29,6 +29,13 @@ class DefaultConfig:
     # JWT SECRET KEY
     JWT_SECRET_KEY = 'xiuagTFxgx..ADFEaiuxdbjas$#$1%$$&8-12du91234562'
 
+    NGROK_SUBDOMAN = 'https://3ae2-116-22-20-85.ngrok-free.app'
+
+    #### 企业微信相关信息 ####
+    WXWORK_COPRID = 'ww04ecc3032787ebc3'
+    WXWORK_APP_SECRET = 'avr_EJqaiVBqBvSB4QD0F2F9ZMO4e-_F607GBF6rJQQ'
+    WXWORK_APP_AGENT_ID = '1000003'
+    WXWORK_REDIRECT_URI = NGROK_SUBDOMAN + '/wxwork-oauth'
 
     ### 跨越设置 ###
     # 让flask-cors直接读取配置文件。
@@ -37,6 +44,7 @@ class DefaultConfig:
         "https://127.0.0.1:8080",
         "http://127.0.0.1:5000",
         "https://127.0.0.1:5000",
+        NGROK_SUBDOMAN
     ]
     CORS_MAX_AGE = 86400
     CORS_SUPPORTS_CREDENTIALS = True
@@ -67,17 +75,18 @@ class DevConfig(DefaultConfig):
     SQLALCHEMY_RECORD_QUERIES = False
 
     # REDIS信息
-    REDIS_HOST = "10.0.1.140"
-    REDIS_PORT = 30817
-    REDIS_SELECT_DB = 0
+    REDIS_HOST = "127.0.0.1"
+    REDIS_PORT = 6379
+    REDIS_SELECT_DB = 8
 
     # 定义redis集群的Node节点信息
     # 注意不一定要全部集群的节点信息都放在这里，因为RedisCluster只要求集群中其中一个节点即可！
-    REDIS_CLUSTER_NODES = [
-        {"host": "192.168.2.6", "port": 7000},
-        {"host": "192.168.2.6", "port": 7001},
-        {"host": "192.168.2.6", "port": 7002},
-    ]
+    # REDIS_CLUSTER_NODES = [
+    #     {"host": "192.168.2.6", "port": 7000},
+    #     {"host": "192.168.2.6", "port": 7001},
+    #     {"host": "192.168.2.6", "port": 7002},
+    # ]
+
 
 
 class ProductConfig(DefaultConfig):
