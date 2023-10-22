@@ -1,5 +1,7 @@
-import sqlalchemy as sa
+import uuid
 
+import sqlalchemy as sa
+import shortuuid
 from app import db
 from app.api.models import BaseModel
 
@@ -7,7 +9,7 @@ from app.api.models import BaseModel
 class Invite(BaseModel):
     __tablename__ = 't_invite'
 
-    id = sa.Column(sa.String(100), primary_key=True)
+    id = sa.Column(sa.String(100), primary_key=True, default=shortuuid.uuid)
     # 关联关系
     employee_id = sa.Column(sa.String(100), sa.ForeignKey("t_employee.employee_id"))
     employee = db.relationship("Employee", back_populates='invites')
@@ -23,6 +25,9 @@ class Invite(BaseModel):
 
 class Employee(BaseModel):
     __tablename__ = 't_employee'
+
+    # 这个必须排除，不然会递归序列化，然后就崩了
+    serialize_rules = ('-invites',)
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
     employee_id = sa.Column(sa.String(100), nullable=False, unique=True, index=True, doc="员工ID", comment="员工ID")
