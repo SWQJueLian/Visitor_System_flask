@@ -56,22 +56,7 @@ def verify_token(token):
     try:
         playload = jwt.decode(token, key=current_app.config["JWT_SECRET_KEY"], algorithms=["HS256"])
         if playload:
-            # 获取token中的userid
-            userid = playload.get("userid")
-            # 从redis中查询该userid是否有允许的tokens列表
-            tokens = redis_cluster.smembers(f"user:{userid}:tokens")
-            # 如果token不在redis获取到的列表中，则直接返回空playload
-            # 登录装饰器会根据playload来判断是否登录的。
-            if not tokens or token not in tokens:
-                playload = {}
-            else:
-                # 如果还要实现封禁用户，一般在登录的时候会校验用户的状态字段
-                # 如果用户是在后台被封禁的，那么后台一般执行封禁的动作时就应该把用户的所有token清除掉。
-                # 所以这里是没必要再去用userid来查询用户当前是否被禁用了！
-                # 如果你非要再查一下可以这样做...
-                # 从缓存类中拿到用户的状态，然后判断用户状态字段，不过这完全没必要的.,...
-                # UserCache(userid).get()
-                is_refresh_token = playload.get("is_refresh_token")
+            is_refresh_token = playload.get("is_refresh_token")
     except jwt.PyJWTError as e:
         playload = {}
     return playload, is_refresh_token
