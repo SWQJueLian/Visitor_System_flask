@@ -1,7 +1,7 @@
 import aniso8601
 import sqlalchemy as sa
 from flask import g
-from flask_restful import Resource, reqparse, inputs
+from flask_restful import Resource, reqparse, inputs, abort
 
 from app import db
 from app.modules.invite.models import Invite
@@ -41,14 +41,25 @@ class InviteListApi(Resource):
             **args,
         })
 
-        return [x.to_dict(
+        results = [x.to_dict(
             only=('id', 'visitor_name', 'visitor_mobile', 'visit_date', 'created_at', 'status')
         ) for x in invite_list]
+
+        data = {
+            'results': results
+        }
+
+        if len(results) > 0:
+            data.setdefault("pre_datetime", results[-1]['created_at'])
+
+        return data
 
 
 class InviteDetailApi(Resource):
     def get(self, invite_id):
         invite = db.session.scalar(sa.select(Invite).where(Invite.id == invite_id))
+        if invite is None:
+            abort(404)
 
         return invite.to_dict()
 
@@ -64,8 +75,8 @@ class InviteCreateApi(Resource):
         parser.add_argument('visitor_name', location='json', required=True, help='访客名必填')
         parser.add_argument('visitor_mobile', location='json', required=True, help='访客名必填')
         parser.add_argument('visitor_num', location='json', required=False, type=inputs.positive)
-        parser.add_argument('visit_date', location='json', required=True, help='来访日期必填',
-                            type=inputs.datetime_from_iso8601)
+        parser.add_argument('visit_date', location='json', required=True,
+                            type=datetime_from_iso8601_split_space)
         parser.add_argument('visitor_car_number', location='json', required=False)
         parser.add_argument('visitor_reason', location='json', required=True, help='访客原因必填')
         parser.add_argument('visitor_unit', location='json', required=False)

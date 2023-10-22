@@ -2,6 +2,7 @@ from datetime import datetime
 
 import pytz
 import sqlalchemy as sa
+from flask_restful import abort
 from sqlalchemy.orm import load_only
 
 from app import db
@@ -16,7 +17,7 @@ def invite_get_all(filter_data):
     # 如果有时间日期过滤就加上。
     # 这里要用来做下拉刷新和上拉瀑布流加载
     if filter_data.get('datetime'):
-        filter_kw.append(Invite.created_at > filter_data.get('datetime'))
+        filter_kw.append(Invite.created_at < filter_data.get('datetime'))
     # 如果有关键词过滤就加上。
 
     filter_or_kw = []
@@ -55,6 +56,9 @@ def invite_visitor_arrive(invite_id, status):
     """访客到达，更新邀请中的状态信息"""
     invite: Invite = db.session.execute(
         sa.select(Invite).where(Invite.id == invite_id).options(load_only(Invite.status, Invite.visit_date))).scalar()
+
+    if invite is None:
+        abort(404)
 
     ch_tz = pytz.timezone('Asia/Shanghai')
     # 把时区添加上去，因为取出来又不带时区信息。
