@@ -29,7 +29,7 @@ class DefaultConfig:
     # JWT SECRET KEY
     JWT_SECRET_KEY = 'xiuagTFxgx..ADFEaiuxdbjas$#$1%$$&8-12du91234562'
 
-    NGROK_SUBDOMAN = 'https://3ae2-116-22-20-85.ngrok-free.app'
+    NGROK_SUBDOMAN = 'http://wx.testswq.com:5656'
 
     #### 企业微信相关信息 ####
     WXWORK_COPRID = 'ww04ecc3032787ebc3'
@@ -44,6 +44,9 @@ class DefaultConfig:
         "https://127.0.0.1:8080",
         "http://127.0.0.1:5000",
         "https://127.0.0.1:5000",
+        'http://127.0.0.1:5173',
+        'http://localhost:5173',
+        'http://localhost:8080',
         NGROK_SUBDOMAN
     ]
     CORS_MAX_AGE = 86400

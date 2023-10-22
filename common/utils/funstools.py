@@ -29,7 +29,7 @@ def output_api_json(data, code, headers=None):
         final_data = None
 
     data = {
-        "code": temp_code,
+        "code": 0,  # TODO: 先用0，到时候再写一个业务异常，和drf那样。
         "message": data.pop("message") if "message" in data else "ok",
         "data": final_data
     }
