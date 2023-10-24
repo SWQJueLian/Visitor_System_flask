@@ -10,6 +10,7 @@ from sqlalchemy.exc import OperationalError
 
 from app.settings import constants
 from app.settings.configs import config_dict
+from flask_apscheduler import APScheduler
 
 try:
     import pymysql
@@ -27,6 +28,9 @@ sys.path.append(os.path.join(BASE_DIR, "../common"))
 # db对象
 # 调用session_options传递自己的Session类，实现读写分离
 db = SQLAlchemy()
+
+# APSCHEDULER
+scheduler = APScheduler()
 
 # redis
 redis_cli: Redis = None
@@ -109,6 +113,10 @@ def register_extra(app: Flask):
 
     ### 跨域， flask-cors ###
     CORS(app)
+
+    # APSCHEDULER
+    scheduler.init_app(app)
+    scheduler.start()
 
 
 def register_blueprint(app: Flask):

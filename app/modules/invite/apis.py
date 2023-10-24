@@ -3,7 +3,7 @@ import sqlalchemy as sa
 from flask import g
 from flask_restful import Resource, reqparse, inputs, abort
 
-from app import db
+from app import db, scheduler
 from app.modules.invite.models import Invite
 from app.modules.invite.services import invite_get_all, invite_save, invite_update_by_employee, invite_visitor_arrive
 from utils.decorators import login_required_mixin
@@ -95,7 +95,11 @@ class InviteCreateApi(Resource):
         #
         # db.session.flush()
 
-        invite_save(employee_id, args)
+        invite = invite_save(employee_id, args)
+        # trigger不用指定了，默认就是date
+        from app.tasks.invite_task import send_sms_to_vistor
+        job = scheduler.add_job('sned_sms_to_vistor', send_sms_to_vistor, args=(invite.visitor_mobile,))
+        print("jobid", job.id)
 
         return "InviteCreateApi"
 
@@ -127,9 +131,16 @@ class InviteStatusUpdateApi(Resource):
         return val
 
     def put(self, invite_id):
+        from app.tasks.invite_task import send_notify_to_employee
         parser = reqparse.RequestParser()
         parser.add_argument('password', location='json', required=True, type=self.validate_password)
         parser.add_argument('status', location='json', type=int, required=True, choices=(1, 2))
         args = parser.parse_args()
 
-        invite_visitor_arrive(invite_id, args['status'])
+        invite = invite_visitor_arrive(invite_id, args['status'])
+
+        # trigger不用指定了，默认就是date
+        scheduler.add_job('send_notify', send_notify_to_employee, args=(invite.id, ))
+
+        return {}
+
