@@ -37,7 +37,6 @@ venv/
 ENV/
 
 
-.idea
 logs
 *.log
 
@@ -102,3 +101,5 @@ Temporary Items
 
 # config
 .env
+
+.idea
