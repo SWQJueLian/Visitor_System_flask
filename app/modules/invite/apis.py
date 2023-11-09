@@ -1,11 +1,10 @@
 import aniso8601
-import sqlalchemy as sa
 from flask import g
 from flask_restful import Resource, reqparse, inputs, abort
 
-from app import db, scheduler
-from app.modules.invite.models import Invite
+from app import scheduler
 from app.modules.invite.services import invite_get_all, invite_save, invite_update_by_employee, invite_visitor_arrive
+from caches.model_caches import InviteCache, EmployeeCache
 from utils.decorators import login_required_mixin
 
 
@@ -57,11 +56,24 @@ class InviteListApi(Resource):
 
 class InviteDetailApi(Resource):
     def get(self, invite_id):
-        invite = db.session.scalar(sa.select(Invite).where(Invite.id == invite_id))
-        if invite is None:
+        # invite = db.session.scalar(sa.select(Invite).where(Invite.id == invite_id))
+        # if invite is None:
+        #     abort(404)
+
+        # 使用缓存层代替原来的方式去拿数据
+        # 排除掉关联关系，因为redis中hash不能再嵌套hash了，只能拿到id再去缓存中读取employee的缓存
+        invite_dict = InviteCache(invite_id).get(serializer_rules=('-employee',))
+        if not invite_dict:
             abort(404)
 
-        return invite.to_dict()
+        # 读取employee缓存
+        employee_id = invite_dict.get('employee_id')
+        employee_dict = EmployeeCache(employee_id).get(serializer_rules=('-updated_at', '-created_at', '-id'))
+
+        # 追加员工信息到返回json中
+        invite_dict.setdefault('employee', employee_dict)
+
+        return invite_dict
 
 
 class InviteCreateApi(Resource):
@@ -134,13 +146,12 @@ class InviteStatusUpdateApi(Resource):
         from app.tasks.invite_task import send_notify_to_employee
         parser = reqparse.RequestParser()
         parser.add_argument('password', location='json', required=True, type=self.validate_password)
-        parser.add_argument('status', location='json', type=int, required=True, choices=(1, 2))
-        args = parser.parse_args()
+        # parser.add_argument('status', location='json', type=int, required=True, choices=(1, 2))
+        parser.parse_args()
 
-        invite = invite_visitor_arrive(invite_id, args['status'])
+        invite = invite_visitor_arrive(invite_id)
 
         # trigger不用指定了，默认就是date
-        scheduler.add_job('send_notify', send_notify_to_employee, args=(invite.id, ))
+        scheduler.add_job('send_notify', send_notify_to_employee, args=(invite.id,))
 
         return {}
-
