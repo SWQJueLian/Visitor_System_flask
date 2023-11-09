@@ -52,7 +52,7 @@ def invite_update_by_employee(employee_id, invite_id, validated_data: dict):
     db.session.commit()
 
 
-def invite_visitor_arrive(invite_id):
+def invite_visitor_arrive(invite_id, status):
     """访客到达，更新邀请中的状态信息"""
     invite: Invite = db.session.execute(
         sa.select(Invite).where(Invite.id == invite_id).options(load_only(Invite.status, Invite.visit_date))).scalar()
@@ -64,8 +64,7 @@ def invite_visitor_arrive(invite_id):
     # 把时区添加上去，因为取出来又不带时区信息。
     if ch_tz.localize(invite.visit_date).date() != datetime.now(ch_tz).date():
         raise Exception('来访日期与当前日期不相等')
-    # 访客到达不应该从前端中接受status作为arg进行更新数据库中的状态，而且用从类似常量的方式读取并写入
-    invite.status = Invite.Status.VISITED
+    invite.status = status
     db.session.commit()
 
     return invite

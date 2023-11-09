@@ -35,7 +35,6 @@ scheduler = APScheduler()
 # redis
 redis_cli: Redis = None
 
-
 def create_flask_app(env) -> Flask:
     """
     创建app对象并返回
@@ -94,13 +93,13 @@ def register_extra(app: Flask):
 
     # 初始化redis
     global redis_cli
-    redis_cli = Redis(
+    app.redis_cli = Redis(
         host=app.config["REDIS_HOST"],
         port=app.config["REDIS_PORT"],
         db=app.config["REDIS_SELECT_DB"],
         decode_responses=True  # 取出来默认decode，就不用自己decode了...
     )
-    app.redis_cli = redis_cli
+
     # 数据迁移
     Migrate(app, db)
     # 导入模型类【一定要记得！】

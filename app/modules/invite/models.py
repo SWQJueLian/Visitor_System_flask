@@ -7,12 +7,6 @@ from app.api.models import BaseModel
 
 
 class Invite(BaseModel):
-
-    class Status:
-        NOT_VISITED = 0  # 未到访
-        VISITED = 1  # 已到访
-        EXPIRED = 2  # 已过期
-
     __tablename__ = 't_invite'
 
     id = sa.Column(sa.String(100), primary_key=True, default=shortuuid.uuid)
@@ -26,7 +20,7 @@ class Invite(BaseModel):
     visitor_car_number = sa.Column(sa.String(10), nullable=True)
     visitor_reason = sa.Column(sa.String(50), nullable=True)
     visitor_unit = sa.Column(sa.String(20), nullable=True)
-    status = sa.Column(sa.SmallInteger, default=Status.NOT_VISITED)
+    status = sa.Column(sa.SmallInteger, default=0)
 
 
 class Employee(BaseModel):
