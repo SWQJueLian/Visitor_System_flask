@@ -134,10 +134,10 @@ class InviteStatusUpdateApi(Resource):
         from app.tasks.invite_task import send_notify_to_employee
         parser = reqparse.RequestParser()
         parser.add_argument('password', location='json', required=True, type=self.validate_password)
-        parser.add_argument('status', location='json', type=int, required=True, choices=(1, 2))
-        args = parser.parse_args()
+        # parser.add_argument('status', location='json', type=int, required=True, choices=(1, 2))
+        parser.parse_args()
 
-        invite = invite_visitor_arrive(invite_id, args['status'])
+        invite = invite_visitor_arrive(invite_id)
 
         # trigger不用指定了，默认就是date
         scheduler.add_job('send_notify', send_notify_to_employee, args=(invite.id, ))
