@@ -73,7 +73,7 @@ class InviteCache(BaseModelCache):
 
         return invite_info
 
-    def update_or_delete(self, *rags, **kwargs):
+    def update_or_delete(self, *args, **kwargs):
         # 因为invite对象是hash类型直接删除即可，集合类型进行update操作比较合适。
         redis_cli.delete(self.key)
 
