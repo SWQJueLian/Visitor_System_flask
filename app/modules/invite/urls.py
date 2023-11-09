@@ -1,5 +1,3 @@
-from flask_restful import Api
-
 from .apis import (
     InviteListApi,
     InviteDetailApi,
