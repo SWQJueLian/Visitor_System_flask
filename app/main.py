@@ -8,7 +8,7 @@ from app import create_app
 app = create_app(os.environ.get("APP_ENV", "dev"))
 
 
-@app.route('/')
+@app.route("/")
 def all_route():
     """返回所有路由信息,调试用..."""
     rules = app.url_map.iter_rules()

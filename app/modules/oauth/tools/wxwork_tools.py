@@ -1,15 +1,13 @@
 import logging
 
 import requests
-
-
 from flask import current_app
 from redis import Redis
 from requests import Response
 
-# from common.exceptions.cust_exception import BusinessException
-
 from app.modules.invite.models import Invite
+
+# from common.exceptions.cust_exception import BusinessException
 
 """
 1. 获取token
@@ -18,7 +16,7 @@ log = logging.getLogger(__name__)
 
 
 class BaseWXWorkApi:
-    CACHE_KEY = 'access_token'
+    CACHE_KEY = "access_token"
 
     def __init__(self, coprid=None, app_secret=None):
         """
@@ -26,8 +24,8 @@ class BaseWXWorkApi:
         :param coprid:
         :param app_secret:
         """
-        self._coprid = coprid or current_app.config['WXWORK_COPRID']
-        self._app_secret = app_secret or current_app.config['WXWORK_APP_SECRET']
+        self._coprid = coprid or current_app.config["WXWORK_COPRID"]
+        self._app_secret = app_secret or current_app.config["WXWORK_APP_SECRET"]
         # self._access_token = None
 
     @property
@@ -41,21 +39,18 @@ class BaseWXWorkApi:
 
         access_token = redis_cli.get(self.CACHE_KEY)
         if access_token is None:
-            print('access_token为空，刷新获取token')
+            print("access_token为空，刷新获取token")
             return self.refresh_access_token()
         return access_token
 
     def refresh_access_token(self):
         """刷新access_token"""
-        url = 'https://qyapi.weixin.qq.com/cgi-bin/gettoken'
-        params = {
-            "corpid": self._coprid,
-            'corpsecret': self._app_secret
-        }
+        url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken"
+        params = {"corpid": self._coprid, "corpsecret": self._app_secret}
         ret_data = self.httpSend(url, params=params)
-        access_token = ret_data.get('access_token')
+        access_token = ret_data.get("access_token")
         # 如果要存进redis中，可以参考，一般是这里的秒-30秒比较正常，可以减1分钟或者更多
-        expires = ret_data.get('expires_in') or 7200
+        expires = ret_data.get("expires_in") or 7200
         redis_cli: Redis = current_app.redis_cli
         redis_cli.set(self.CACHE_KEY, access_token, ex=expires - 60)
         return access_token
@@ -65,7 +60,9 @@ class BaseWXWorkApi:
         """判断返回状态码是否为400014 和 42001 ，此时token过期"""
         return errcode == 40014 or errcode == 42001
 
-    def httpSend(self, url, params=None, data=None, send_type='GET', body_type='JSON') -> dict:
+    def httpSend(
+        self, url, params=None, data=None, send_type="GET", body_type="JSON"
+    ) -> dict:
         """
         :param url:
         :param params:
@@ -74,35 +71,35 @@ class BaseWXWorkApi:
         :param body_type: 默认为JSON，如果是普通请求体，传DATA
         :return:
         """
-        print('URL: ', url)
-        print('params: ', params)
-        print('data: ', data)
+        print("URL: ", url)
+        print("params: ", params)
+        print("data: ", data)
         """发送请求，会循环3次来尝试获取响应，返回字典格式的响应体"""
         for i in range(3):
-            print(f'发送第{i}次请求')
-            if send_type == 'GET':
+            print(f"发送第{i}次请求")
+            if send_type == "GET":
                 response: Response = requests.get(url, params=params, data=data)
-            if send_type == 'POST':
-                print('发送的是POST请求')
-                if body_type == 'JSON':
+            if send_type == "POST":
+                print("发送的是POST请求")
+                if body_type == "JSON":
                     response: Response = requests.post(url, params=params, json=data)
                 else:
                     response: Response = requests.post(url, params=params, data=data)
-                print('request url: ', response.request.url)
+                print("request url: ", response.request.url)
             json_data = response.json()
             print(f"{json_data=}")
-            errcode = json_data.get('errcode')
+            errcode = json_data.get("errcode")
             # 判断token是否过期
             if self.is_token_expired(errcode):
                 self.refresh_access_token()
-                log.info('企业微信access_token过期，重新获取。')
+                log.info("企业微信access_token过期，重新获取。")
                 continue
             # 不过其，但是状态码不为0，直接抛出业务异常，并记录日志
             if errcode != 0:
                 # 记录异常
-                log.error(f'请求企业微信api异常，errcode不为0, 返回内容：{json_data}')
+                log.error(f"请求企业微信api异常，errcode不为0, 返回内容：{json_data}")
                 # raise BusinessException(detail='请求企业微信api异常')
-                raise Exception('请求企业微信api异常')
+                raise Exception("请求企业微信api异常")
             return json_data
 
 
@@ -111,11 +108,8 @@ class WXWorkApi(BaseWXWorkApi):
         """
         根据code获取用户基本信息
         """
-        url = 'https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo'
-        params = {
-            'access_token': self.access_token,
-            "code": code
-        }
+        url = "https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo"
+        params = {"access_token": self.access_token, "code": code}
         resp_data = self.httpSend(url, params=params)
         return resp_data
 
@@ -123,11 +117,8 @@ class WXWorkApi(BaseWXWorkApi):
         """
         根据userid获取用户详细信息
         """
-        url = 'https://qyapi.weixin.qq.com/cgi-bin/user/get'
-        params = {
-            'access_token': self.access_token,
-            "userid": userid
-        }
+        url = "https://qyapi.weixin.qq.com/cgi-bin/user/get"
+        params = {"access_token": self.access_token, "userid": userid}
         resp_data = self.httpSend(url, params=params)
         return resp_data
 
@@ -135,18 +126,15 @@ class WXWorkApi(BaseWXWorkApi):
         """
         获取部门详情
         """
-        url = 'https://qyapi.weixin.qq.com/cgi-bin/department/get'
-        params = {
-            'access_token': self.access_token,
-            "id": userid
-        }
+        url = "https://qyapi.weixin.qq.com/cgi-bin/department/get"
+        params = {"access_token": self.access_token, "id": userid}
         resp_data = self.httpSend(url, params=params)
         return resp_data
 
     def send_arrive_markdown_msg(self, agentid, invite: Invite):
-        url = 'https://qyapi.weixin.qq.com/cgi-bin/message/send'
+        url = "https://qyapi.weixin.qq.com/cgi-bin/message/send"
         params = {
-            'access_token': self.access_token,
+            "access_token": self.access_token,
         }
         data = {
             "touser": invite.employee.employee_id,
@@ -161,7 +149,7 @@ class WXWorkApi(BaseWXWorkApi):
 > 请您准备接待！"""
             },
             "enable_duplicate_check": 0,
-            "duplicate_check_interval": 30
+            "duplicate_check_interval": 30,
         }
-        resp_data = self.httpSend(url, params=params, data=data, send_type='POST')
+        resp_data = self.httpSend(url, params=params, data=data, send_type="POST")
         return resp_data

@@ -2,7 +2,6 @@ import functools
 from dataclasses import asdict
 
 from flask import g
-
 from utils.unionresult import GlobalStatusCode, JsonApiResult
 
 
@@ -21,7 +20,11 @@ def login_required_mixin(func):
         # if is_refresh_token or userid is None:
         if not is_login:
             return asdict(
-                JsonApiResult(GlobalStatusCode.LOGIN_REQUIRED_ERR.code, GlobalStatusCode.LOGIN_REQUIRED_ERR.msg))
+                JsonApiResult(
+                    GlobalStatusCode.LOGIN_REQUIRED_ERR.code,
+                    GlobalStatusCode.LOGIN_REQUIRED_ERR.msg,
+                )
+            )
 
         # 调用原来的视图函数
         ret = func(*args, **kwargs)

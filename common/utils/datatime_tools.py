@@ -10,7 +10,7 @@ def to_13bit_timestamp(p_datetime):
     """
     if not isinstance(p_datetime, datetime):
         raise ValueError("p_datetime not datetime")
-    return '%.f' % (p_datetime.timestamp() * 1000)
+    return "%.f" % (p_datetime.timestamp() * 1000)
 
 
 def to_10bit_timestamp(timestamp: Union[str, float]):
