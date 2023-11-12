@@ -60,9 +60,7 @@ class BaseWXWorkApi:
         """判断返回状态码是否为400014 和 42001 ，此时token过期"""
         return errcode == 40014 or errcode == 42001
 
-    def httpSend(
-        self, url, params=None, data=None, send_type="GET", body_type="JSON"
-    ) -> dict:
+    def httpSend(self, url, params=None, data=None, send_type="GET", body_type="JSON") -> dict:
         """
         :param url:
         :param params:

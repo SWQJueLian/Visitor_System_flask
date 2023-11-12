@@ -50,11 +50,9 @@ def verify_token(token):
     """
     is_refresh_token = None
     try:
-        playload = jwt.decode(
-            token, key=current_app.config["JWT_SECRET_KEY"], algorithms=["HS256"]
-        )
+        playload = jwt.decode(token, key=current_app.config["JWT_SECRET_KEY"], algorithms=["HS256"])
         if playload:
             is_refresh_token = playload.get("is_refresh_token")
-    except jwt.PyJWTError as e:
+    except jwt.PyJWTError:
         playload = {}
     return playload, is_refresh_token

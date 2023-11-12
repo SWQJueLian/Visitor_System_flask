@@ -58,9 +58,7 @@ def invite_save(employee_id, validated_data: dict):
 def invite_update_by_employee(employee_id, invite_id, validated_data: dict):
     """根据员工id更新邀请信息"""
     db.session.execute(
-        sa.update(Invite)
-        .where(Invite.id == invite_id, Invite.employee_id == employee_id)
-        .values(**validated_data)
+        sa.update(Invite).where(Invite.id == invite_id, Invite.employee_id == employee_id).values(**validated_data)
     )
     db.session.commit()
 
@@ -68,9 +66,7 @@ def invite_update_by_employee(employee_id, invite_id, validated_data: dict):
 def invite_visitor_arrive(invite_id):
     """访客到达，更新邀请中的状态信息"""
     invite: Invite = db.session.execute(
-        sa.select(Invite)
-        .where(Invite.id == invite_id)
-        .options(load_only(Invite.status, Invite.visit_date))
+        sa.select(Invite).where(Invite.id == invite_id).options(load_only(Invite.status, Invite.visit_date))
     ).scalar()
 
     if invite is None:

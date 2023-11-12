@@ -40,9 +40,7 @@ class InviteListApi(Resource):
             location="args",
             type=datetime_from_iso8601_split_space,
         )
-        parser.add_argument(
-            "limit", required=False, location="args", default=20, type=int
-        )
+        parser.add_argument("limit", required=False, location="args", default=20, type=int)
         args = parser.parse_args()
         print(args)
 
@@ -89,9 +87,7 @@ class InviteDetailApi(Resource):
 
         # 读取employee缓存
         employee_id = invite_dict.get("employee_id")
-        employee_dict = EmployeeCache(employee_id).get(
-            serializer_rules=("-updated_at", "-created_at", "-id")
-        )
+        employee_dict = EmployeeCache(employee_id).get(serializer_rules=("-updated_at", "-created_at", "-id"))
 
         # 追加员工信息到返回json中
         invite_dict.setdefault("employee", employee_dict)
@@ -109,15 +105,9 @@ class InviteCreateApi(Resource):
         # parser.add_argument('employee_id', location='json', required=True, help='员工id必填')
         # parser.add_argument('employee_name', location='json', required=True, help='员工名必填')
         # parser.add_argument('employee_department', location='json', required=True, help='员工所属部门名必填')
-        parser.add_argument(
-            "visitor_name", location="json", required=True, help="访客名必填"
-        )
-        parser.add_argument(
-            "visitor_mobile", location="json", required=True, help="访客名必填"
-        )
-        parser.add_argument(
-            "visitor_num", location="json", required=False, type=inputs.positive
-        )
+        parser.add_argument("visitor_name", location="json", required=True, help="访客名必填")
+        parser.add_argument("visitor_mobile", location="json", required=True, help="访客名必填")
+        parser.add_argument("visitor_num", location="json", required=False, type=inputs.positive)
         parser.add_argument(
             "visit_date",
             location="json",
@@ -125,9 +115,7 @@ class InviteCreateApi(Resource):
             type=datetime_from_iso8601_split_space,
         )
         parser.add_argument("visitor_car_number", location="json", required=False)
-        parser.add_argument(
-            "visitor_reason", location="json", required=True, help="访客原因必填"
-        )
+        parser.add_argument("visitor_reason", location="json", required=True, help="访客原因必填")
         parser.add_argument("visitor_unit", location="json", required=False)
         args = parser.parse_args()
         print(args)
@@ -148,9 +136,7 @@ class InviteCreateApi(Resource):
         # trigger不用指定了，默认就是date
         from app.tasks.invite_task import send_sms_to_vistor
 
-        job = scheduler.add_job(
-            "sned_sms_to_vistor", send_sms_to_vistor, args=(invite.visitor_mobile,)
-        )
+        job = scheduler.add_job("sned_sms_to_vistor", send_sms_to_vistor, args=(invite.visitor_mobile,))
         print("jobid", job.id)
 
         return "InviteCreateApi"
@@ -159,20 +145,12 @@ class InviteCreateApi(Resource):
 class InviteUpdateApi(Resource):
     def put(self, invite_id):
         parser = reqparse.RequestParser()
-        parser.add_argument(
-            "visitor_name", location="json", required=True, help="访客名必填"
-        )
-        parser.add_argument(
-            "visitor_mobile", location="json", required=True, help="访客名必填"
-        )
-        parser.add_argument(
-            "visitor_num", location="json", required=False, type=inputs.positive
-        )
+        parser.add_argument("visitor_name", location="json", required=True, help="访客名必填")
+        parser.add_argument("visitor_mobile", location="json", required=True, help="访客名必填")
+        parser.add_argument("visitor_num", location="json", required=False, type=inputs.positive)
         parser.add_argument("visit_date", location="json", required=True, help="来访日期必填")
         parser.add_argument("visitor_car_number", location="json", required=False)
-        parser.add_argument(
-            "visitor_reason", location="json", required=True, help="访客原因必填"
-        )
+        parser.add_argument("visitor_reason", location="json", required=True, help="访客原因必填")
         parser.add_argument("visitor_unit", location="json", required=False)
         args = parser.parse_args()
         print(args)
@@ -194,9 +172,7 @@ class InviteStatusUpdateApi(Resource):
         from app.tasks.invite_task import send_notify_to_employee
 
         parser = reqparse.RequestParser()
-        parser.add_argument(
-            "password", location="json", required=True, type=self.validate_password
-        )
+        parser.add_argument("password", location="json", required=True, type=self.validate_password)
         # parser.add_argument('status', location='json', type=int, required=True, choices=(1, 2))
         parser.parse_args()
 

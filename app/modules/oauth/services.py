@@ -27,9 +27,7 @@ def wxwork_get_userinfo(code: str):
     if department_id is None:
         raise Exception("获取用户基本信息username出错")
     # 2. 获取部门名称
-    department_name = (
-        wxwork_api.get_detail_department(department_id).get("department").get("name")
-    )
+    department_name = wxwork_api.get_detail_department(department_id).get("department").get("name")
     if department_name is None:
         raise Exception("获取用户基本信息department_name出错")
 
@@ -49,9 +47,7 @@ def wxwork_generator_access_token(employee_data):
     # token校验成功的user对象中取出userid,（只信任从token中取出的user_id）
     employee_id = employee_data.pop("employee_id")
 
-    employee = db.session.scalar(
-        sa.select(Employee).where(Employee.employee_id == employee_id)
-    )
+    employee = db.session.scalar(sa.select(Employee).where(Employee.employee_id == employee_id))
     # 不存在直接创建
     if employee is None:
         employee = Employee(employee_id=employee_id, **employee_data)

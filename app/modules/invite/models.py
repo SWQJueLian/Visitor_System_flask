@@ -43,9 +43,7 @@ class Employee(BaseModel):
         comment="员工ID",
     )
     employee_name = sa.Column(sa.String(20), nullable=False, doc="员工姓名", comment="员工姓名")
-    employee_department = sa.Column(
-        sa.String(20), nullable=False, doc="员工所属部门名", comment="员工所属部门名"
-    )
+    employee_department = sa.Column(sa.String(20), nullable=False, doc="员工所属部门名", comment="员工所属部门名")
 
     # 关联关系
     invites = db.relationship("Invite", back_populates="employee")

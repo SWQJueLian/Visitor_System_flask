@@ -16,7 +16,7 @@ try:
     import pymysql
 
     pymysql.install_as_MySQLdb()
-except:
+except Exception:
     pass
 
 # 定义一个变量记录项目的根目录
@@ -60,9 +60,7 @@ def create_flask_app(env) -> Flask:
     # # flask 2.2之后。原因：2.2提供了一个JsonProvider ： https://github.com/pallets/flask/pull/4692
     # # 拓展：使用orjson，这个json库比较好的样子？有空看看。https://www.jb51.net/article/250451.htm
     # app.json.ensure_ascii = False
-    app.json_provider_class.ensure_ascii = app.config.get(
-        "ADV_FLASK_ENSURE_ASCII", True
-    )
+    app.json_provider_class.ensure_ascii = app.config.get("ADV_FLASK_ENSURE_ASCII", True)
 
     return app
 
@@ -113,7 +111,7 @@ def register_extra(app: Flask):
     # 将token中的用户id、是否刷新token标志位写入到g对象中，方便后续视图类、视图函数判断是否有登录。
     from utils.middlewares import get_userid
 
-    from app.modules.invite.models import Employee, Invite
+    from app.modules.invite.models import Employee, Invite  # noqa
 
     app.before_request(get_userid)
 

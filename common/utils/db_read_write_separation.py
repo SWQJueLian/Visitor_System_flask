@@ -19,10 +19,10 @@ import typing as t
 import sqlalchemy as sa
 import sqlalchemy.exc
 import sqlalchemy.orm
-from sqlalchemy import Select, UpdateBase
+from sqlalchemy import UpdateBase
 
 if t.TYPE_CHECKING:
-    from flask_sqlalchemy.extension import SQLAlchemy
+    from flask_sqlalchemy.extension import SQLAlchemy  # noqa
 
 from flask_sqlalchemy.session import Session
 
@@ -103,9 +103,7 @@ def _clause_to_engine(
 
         # 如果你指定的key不在engines列表中就抛出异常
         if key not in engines:
-            raise sa.exc.UnboundExecutionError(
-                f"Bind key '{key}' is not in 'SQLALCHEMY_BINDS' config."
-            )
+            raise sa.exc.UnboundExecutionError(f"Bind key '{key}' is not in 'SQLALCHEMY_BINDS' config.")
         # 如果模型中没有指定
         if key is None:
             # 自己写啦，判断是不是flushing操作 或者是 UpdateBase类和其子类
