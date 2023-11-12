@@ -1,7 +1,6 @@
 """实现中间件，类似django的中间件"""
 
-from flask import request, g
-
+from flask import g, request
 from utils.jwt_tools import verify_token
 
 

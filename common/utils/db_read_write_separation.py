@@ -19,10 +19,10 @@ import typing as t
 import sqlalchemy as sa
 import sqlalchemy.exc
 import sqlalchemy.orm
-from sqlalchemy import UpdateBase, Select
+from sqlalchemy import UpdateBase
 
 if t.TYPE_CHECKING:
-    from flask_sqlalchemy.extension import SQLAlchemy
+    from flask_sqlalchemy.extension import SQLAlchemy  # noqa
 
 from flask_sqlalchemy.session import Session
 
@@ -32,12 +32,13 @@ class MYSession(Session):
     查看源码后直接拿到源码这一部分，然后重写get_bind方法，get_bind实际上也是直接复制下来的...
     核心在于其本身有一个_clause_to_engine的方法，通过自己编写一个来实现读写分离
     """
+
     def get_bind(
-            self,
-            mapper: t.Any | None = None,
-            clause: t.Any | None = None,
-            bind: sa.engine.Engine | sa.engine.Connection | None = None,
-            **kwargs: t.Any,
+        self,
+        mapper: t.Any | None = None,
+        clause: t.Any | None = None,
+        bind: sa.engine.Engine | sa.engine.Connection | None = None,
+        **kwargs: t.Any,
     ) -> sa.engine.Engine | sa.engine.Connection:
         """Select an engine based on the ``bind_key`` of the metadata associated with
         the model or table being queried. If no bind key is set, uses the default bind.
@@ -78,7 +79,6 @@ class MYSession(Session):
                 return engine
 
         if clause is not None:
-
             engine = _clause_to_engine(clause, engines, self)
 
             if engine is not None:
@@ -92,7 +92,7 @@ class MYSession(Session):
 
 
 def _clause_to_engine(
-        clause: t.Any | None, engines: t.Mapping[str | None, sa.engine.Engine], session
+    clause: t.Any | None, engines: t.Mapping[str | None, sa.engine.Engine], session
 ) -> sa.engine.Engine | None:
     """If the clause is a table, return the engine associated with the table's
     metadata's bind key.
@@ -103,9 +103,7 @@ def _clause_to_engine(
 
         # 如果你指定的key不在engines列表中就抛出异常
         if key not in engines:
-            raise sa.exc.UnboundExecutionError(
-                f"Bind key '{key}' is not in 'SQLALCHEMY_BINDS' config."
-            )
+            raise sa.exc.UnboundExecutionError(f"Bind key '{key}' is not in 'SQLALCHEMY_BINDS' config.")
         # 如果模型中没有指定
         if key is None:
             # 自己写啦，判断是不是flushing操作 或者是 UpdateBase类和其子类

@@ -14,9 +14,7 @@ def generate_token(playload, expire: datetime.timedelta):
     if not isinstance(expire, datetime.timedelta):
         raise jwt.PyJWTError("生成token过期时间必须是timedelta类型")
 
-    _playload = {
-        "exp": datetime.datetime.utcnow() + expire
-    }
+    _playload = {"exp": datetime.datetime.utcnow() + expire}
     # 更新字典
     _playload.update(playload)
 
@@ -38,9 +36,7 @@ def generate_token(playload, expire: datetime.timedelta):
 def generate_refresh_token(playload, expire: datetime.timedelta):
     """生成带有标志位is_refresh_token的JWT TOKEN"""
 
-    refresh_playload = {
-        "is_refresh_token": True
-    }
+    refresh_playload = {"is_refresh_token": True}
     refresh_playload.update(playload)
 
     return generate_token(refresh_playload, expire)
@@ -57,6 +53,6 @@ def verify_token(token):
         playload = jwt.decode(token, key=current_app.config["JWT_SECRET_KEY"], algorithms=["HS256"])
         if playload:
             is_refresh_token = playload.get("is_refresh_token")
-    except jwt.PyJWTError as e:
+    except jwt.PyJWTError:
         playload = {}
     return playload, is_refresh_token

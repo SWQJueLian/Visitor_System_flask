@@ -8,7 +8,7 @@ from flask_restful.utils import PY3
 def output_api_json(data, code, headers=None):
     """Makes a Flask response with a JSON encoded body"""
 
-    settings = current_app.config.get('RESTFUL_JSON', {})
+    settings = current_app.config.get("RESTFUL_JSON", {})
 
     temp_code = code
 
@@ -31,15 +31,15 @@ def output_api_json(data, code, headers=None):
     data = {
         "code": 0,  # TODO: 先用0，到时候再写一个业务异常，和drf那样。
         "message": data.pop("message") if "message" in data else "ok",
-        "data": final_data
+        "data": final_data,
     }
 
     # If we're in debug mode, and the indent is not set, we set it to a
     # reasonable value here.  Note that this won't override any existing value
     # that was set.  We also set the "sort_keys" value.
     if current_app.debug:
-        settings.setdefault('indent', 4)
-        settings.setdefault('sort_keys', not PY3)
+        settings.setdefault("indent", 4)
+        settings.setdefault("sort_keys", not PY3)
 
     # always end the json dumps with a new line
     # see https://github.com/mitsuhiko/flask/pull/1262

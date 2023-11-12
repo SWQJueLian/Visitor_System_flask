@@ -1,0 +1,54 @@
+[tool.black]
+line-length = 120
+# By default, `black` will ignore skip configuration when paths are explicitly provided.
+# In order for `pre-commit` to respect this configuration, `force-exclude` needs to be explicitly set.
+force-exclude = 'migrations'
+
+[tool.isort]
+# https://black.readthedocs.io/en/stable/guides/using_black_with_other_tools.html#isort
+profile = "black"
+# By default, `isort` will ignore skip configuration when paths are explicitly provided.
+# In order for `pre-commit` to respect this configuration, `filter_files` needs to be set to true.
+# https://jugmac00.github.io/blog/isort-and-pre-commit-a-friendship-with-obstacles/
+filter_files = true
+skip_glob = ["*/migrations/*", "config/*"]
+
+[tool.poetry]
+name = "visitor-flask"
+version = "0.1.0"
+description = ""
+authors = ["swq <1105033640@qq.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+flask = "2.3.3"
+environs = "9.5.0"
+flask-apscheduler = "1.13.0"
+flask-cors = "4.0.0"
+flask-migrate = "4.0.5"
+flask-restful = "0.3.10"
+flask-sqlalchemy = "3.1.1"
+pyjwt = "2.8.0"
+pymysql = "1.1.0"
+pytz = "2023.3.post1"
+redis = "5.0.1"
+requests = "2.31.0"
+shortuuid = "1.0.11"
+sqlalchemy = "2.0.22"
+sqlalchemy-serializer = "1.4.1"
+
+
+[[tool.poetry.source]]
+name = "tsinghua"
+url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple/"
+priority = "default"
+
+
+[tool.poetry.group.dev.dependencies]
+black = {extras = ["d"], version = "^23.11.0"}
+isort = "^5.12.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

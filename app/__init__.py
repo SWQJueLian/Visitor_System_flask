@@ -2,6 +2,7 @@ import os.path
 import sys
 
 from flask import Flask
+from flask_apscheduler import APScheduler
 from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -10,13 +11,12 @@ from sqlalchemy.exc import OperationalError
 
 from app.settings import constants
 from app.settings.configs import config_dict
-from flask_apscheduler import APScheduler
 
 try:
     import pymysql
 
     pymysql.install_as_MySQLdb()
-except:
+except Exception:
     pass
 
 # 定义一个变量记录项目的根目录
@@ -49,8 +49,9 @@ def create_flask_app(env) -> Flask:
     # 然后再从环境变量加载覆盖配置（可以用于覆盖配置、或则迷惑别人...比如SECRET_KEY，你并不想别人知道，你就可以用这种方式。）
     # 从环境变量指向的配置文件中读取的配置信息会覆盖掉从配置对象中加载的同名参数
     # slient ： 如果是True则表示即便没有这个环境遍历，也不会抛出异常。默认为False
-    app.config.from_envvar(constants.EXTRA_CONFIG_FROM_ENV_NAME,
-                           silent=True)  # SECRET_CONFIG变量设置为一个配置文件的相对或者绝对路径，文件里面的配置项是k=v
+    app.config.from_envvar(
+        constants.EXTRA_CONFIG_FROM_ENV_NAME, silent=True
+    )  # SECRET_CONFIG变量设置为一个配置文件的相对或者绝对路径，文件里面的配置项是k=v
 
     # # 返回json
     # # 需要注意的是json默认是会对中文进行ascii编码，需要再flask的配置中设置
@@ -80,6 +81,7 @@ def create_app(env):
 
     # 统一异常处理
     from utils import exceptions
+
     app.register_error_handler(exceptions.DBException, exceptions.database_error)
     app.register_error_handler(OperationalError, exceptions.operational_error)
 
@@ -98,18 +100,19 @@ def register_extra(app: Flask):
         host=app.config["REDIS_HOST"],
         port=app.config["REDIS_PORT"],
         db=app.config["REDIS_SELECT_DB"],
-        decode_responses=True  # 取出来默认decode，就不用自己decode了...
+        decode_responses=True,  # 取出来默认decode，就不用自己decode了...
     )
     app.redis_cli = redis_cli
     # 数据迁移
     Migrate(app, db)
     # 导入模型类【一定要记得！】
-    from app.modules.invite.models import Invite, Employee
-
     # 请求钩子注入
     # 每次请求进来之前，判断是否有token，并校验token
     # 将token中的用户id、是否刷新token标志位写入到g对象中，方便后续视图类、视图函数判断是否有登录。
     from utils.middlewares import get_userid
+
+    from app.modules.invite.models import Employee, Invite  # noqa
+
     app.before_request(get_userid)
 
     ### 跨域， flask-cors ###
@@ -124,6 +127,7 @@ def register_blueprint(app: Flask):
     """将注册蓝图的操作统一方法这个函数中"""
     from app.modules.invite import invite_bp
     from app.modules.oauth import oauth_bp
+
     # url_prefix可以在app注册蓝图的时候写，也可以在蓝图对象实例中指定，如：user_blueprint = Blueprint("users", __name__,url_prefix="/user")
     # 如果同时指定，以app.register_blueprint方法中指定的为准
     app.register_blueprint(invite_bp, url_prefix="/invite")

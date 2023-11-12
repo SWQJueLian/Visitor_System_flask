@@ -22,7 +22,7 @@ def not_allow_empty_text(value):
     :return: 返回一个去掉首部空格的字符串
     """
     value = str(value)
-    match = re.match(r'^\s*$', value)
+    match = re.match(r"^\s*$", value)
     if match is not None:
         raise ValueError("不允许添加空文本")
     return value.lstrip()

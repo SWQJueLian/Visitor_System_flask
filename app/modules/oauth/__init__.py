@@ -1,8 +1,8 @@
 from flask import Blueprint
 from flask_restful import Api
+from utils.funstools import output_api_json
 
 from app.modules.oauth.apis import WxWorkOauthURLGenerateApi, WxWorkUserInfoApi
-from utils.funstools import output_api_json
 
 oauth_bp = Blueprint("oauth", __name__)
 
@@ -12,5 +12,5 @@ api = Api(oauth_bp)
 # 其他： 统一api json输出格式
 api.representation("application/json")(output_api_json)
 
-api.add_resource(WxWorkOauthURLGenerateApi, '/wxwork/')
-api.add_resource(WxWorkUserInfoApi, '/wxwork/userinfo/')
+api.add_resource(WxWorkOauthURLGenerateApi, "/wxwork/")
+api.add_resource(WxWorkUserInfoApi, "/wxwork/userinfo/")
