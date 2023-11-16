@@ -15,7 +15,7 @@ def datetime_from_iso8601_split_space(datetime_str):
 
     Example::
 
-        inputs.datetime_from_iso8601("2012-01-01 23:30:00+02:00")
+        inputs.datetime_from_iso8601_split_space("2012-01-01 23:30:00+02:00")
 
     :param datetime_str: The ISO8601-complying string to transform
     :type datetime_str: str
@@ -33,7 +33,7 @@ class InviteListApi(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument("keyword", required=False, location="args")
         # 由于返回给前端是用空格切分的日期事件，所以前端传回来也是这种格式，此时要处理一下。除非前端处理....都可以解决问题
-        # 但是我前端已经写好了，这李主要兼容前端，这玩意不像DRF序列化器，还可以指定格式化的格式
+        # 但是我前端已经写好了，这里主要兼容前端，这玩意不像DRF序列化器，还可以指定格式化的格式
         parser.add_argument(
             "datetime",
             required=False,
@@ -153,7 +153,7 @@ class InviteUpdateApi(Resource):
         parser.add_argument("visitor_reason", location="json", required=True, help="访客原因必填")
         parser.add_argument("visitor_unit", location="json", required=False)
         args = parser.parse_args()
-        print(args)
+        # print(args)
 
         invite_update_by_employee(g.userid, invite_id, args)
 
