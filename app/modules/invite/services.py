@@ -2,6 +2,7 @@ from datetime import datetime
 
 import pytz
 import sqlalchemy as sa
+from caches.model_caches import InviteCache
 from flask_restful import abort
 from sqlalchemy.orm import load_only
 
@@ -16,8 +17,8 @@ def invite_get_all(filter_data):
     # 这里要用来做下拉刷新和上拉瀑布流加载
     if filter_data.get("datetime"):
         filter_kw.append(Invite.created_at < filter_data.get("datetime"))
-    # 如果有关键词过滤就加上。
 
+    # 如果有关键词过滤就加上。
     filter_or_kw = []
     if filter_data.get("keyword"):
         filter_or_kw = [
@@ -62,6 +63,9 @@ def invite_update_by_employee(employee_id, invite_id, validated_data: dict):
     )
     db.session.commit()
 
+    # 更新缓存
+    InviteCache(invite_id).update_or_delete()
+
 
 def invite_visitor_arrive(invite_id):
     """访客到达，更新邀请中的状态信息"""
@@ -79,5 +83,8 @@ def invite_visitor_arrive(invite_id):
     # 访客到达不应该从前端中接受status作为arg进行更新数据库中的状态，而且用从类似常量的方式读取并写入
     invite.status = Invite.Status.VISITED
     db.session.commit()
+
+    # 更新缓存
+    InviteCache(invite_id).update_or_delete()
 
     return invite
