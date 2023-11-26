@@ -22,7 +22,7 @@ class Invite(BaseModel):
     visitor_name = sa.Column(sa.String(20), nullable=False)
     visitor_mobile = sa.Column(sa.String(11), nullable=False)
     visitor_num = sa.Column(sa.SmallInteger, default=1, nullable=False)
-    visit_date = sa.Column(sa.DateTime, nullable=False)
+    visit_date = sa.Column(sa.DateTime, nullable=False, timezone=True)
     visitor_car_number = sa.Column(sa.String(10), nullable=True)
     visitor_reason = sa.Column(sa.String(50), nullable=True)
     visitor_unit = sa.Column(sa.String(20), nullable=True)

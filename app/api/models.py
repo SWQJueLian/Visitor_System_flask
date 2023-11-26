@@ -1,13 +1,15 @@
 from datetime import datetime
 
-import pytz
+from pytz import timezone
 from sqlalchemy_serializer import SerializerMixin
 
 from app import db
 
 
 class BaseModel(db.Model, SerializerMixin):
-    ch_tz = pytz.timezone("Asia/Shanghai")
+    tz_shanghai = timezone("Asia/Shanghai")
     __abstract__ = True  # 声明这是一个抽象的基类，不需要创建表
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.now(ch_tz))
-    updated_at = db.Column(db.DateTime, onupdate=datetime.now(ch_tz), default=datetime.now(ch_tz))
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.now(tz_shanghai), timezone=True)
+    updated_at = db.Column(
+        db.DateTime, onupdate=datetime.now(tz_shanghai), default=datetime.now(tz_shanghai), timezone=True
+    )
