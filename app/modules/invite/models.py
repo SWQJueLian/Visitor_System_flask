@@ -1,3 +1,5 @@
+from enum import Enum
+
 import shortuuid
 import sqlalchemy as sa
 
@@ -6,7 +8,7 @@ from app.api.models import BaseModel
 
 
 class Invite(BaseModel):
-    class Status:
+    class Status(Enum):
         NOT_VISITED = 0  # 未到访
         VISITED = 1  # 已到访
         EXPIRED = 2  # 已过期
