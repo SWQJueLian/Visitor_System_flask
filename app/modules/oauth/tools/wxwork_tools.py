@@ -1,4 +1,5 @@
 import logging
+from textwrap import dedent
 
 import requests
 from flask import current_app
@@ -134,18 +135,18 @@ class WXWorkApi(BaseWXWorkApi):
         params = {
             "access_token": self.access_token,
         }
+        content = f"""您邀约的访客`{invite.visitor_name}`, 已到达园区！
+        > **邀约详情**
+        > 访客姓名：<font color=\"info\">{invite.visitor_name}</font>
+        > 来访日期：<font color=\"warning\">{invite.visit_date.strftime('%Y-%m-%d %H:%M:%S')}</font>
+        > 
+        > 请您准备接待！"""
+
         data = {
             "touser": invite.employee.employee_id,
             "msgtype": "markdown",
             "agentid": agentid,
-            "markdown": {
-                "content": f"""您邀约的访客`{invite.visitor_name}`, 已到达园区！
-> **邀约详情**
-> 访客姓名：<font color=\"info\">{invite.visitor_name}</font>
-> 来访日期：<font color=\"warning\">{invite.visit_date.strftime('%Y-%m-%d %H:%M:%S')}</font>
-> 
-> 请您准备接待！"""
-            },
+            "markdown": {"content": dedent(content)},
             "enable_duplicate_check": 0,
             "duplicate_check_interval": 30,
         }
