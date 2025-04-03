@@ -31,6 +31,7 @@ def invite_get_all(filter_data):
         sa.select(Invite)
         .where(*filter_kw, sa.or_(*filter_or_kw))
         .limit(filter_data.get("limit", 20))
+        .order_by(Invite.created_at.desc())
         .options(
             load_only(
                 Invite.id,
