@@ -80,7 +80,7 @@ def invite_visitor_arrive(invite_id):
     if invite.tz_shanghai.localize(invite.visit_date).date() != datetime.now(invite.tz_shanghai).date():
         raise Exception("来访日期与当前日期不相等")
     # 访客到达不应该从前端中接受status作为arg进行更新数据库中的状态，而且用从类似常量的方式读取并写入
-    invite.status = Invite.Status.VISITED
+    invite.status = Invite.Status.VISITED.value
     db.session.commit()
 
     # 更新缓存
