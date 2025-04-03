@@ -31,6 +31,7 @@ def invite_get_all(filter_data):
         sa.select(Invite)
         .where(*filter_kw, sa.or_(*filter_or_kw))
         .limit(filter_data.get("limit", 20))
+        .order_by(Invite.created_at.desc())
         .options(
             load_only(
                 Invite.id,
@@ -75,13 +76,11 @@ def invite_visitor_arrive(invite_id):
 
     if invite is None:
         abort(404)
-
-    ch_tz = pytz.timezone("Asia/Shanghai")
     # 把时区添加上去，因为取出来又不带时区信息。
-    if ch_tz.localize(invite.visit_date).date() != datetime.now(ch_tz).date():
+    if invite.tz_shanghai.localize(invite.visit_date).date() != datetime.now(invite.tz_shanghai).date():
         raise Exception("来访日期与当前日期不相等")
     # 访客到达不应该从前端中接受status作为arg进行更新数据库中的状态，而且用从类似常量的方式读取并写入
-    invite.status = Invite.Status.VISITED
+    invite.status = Invite.Status.VISITED.value
     db.session.commit()
 
     # 更新缓存

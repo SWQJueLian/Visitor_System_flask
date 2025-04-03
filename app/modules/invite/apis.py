@@ -136,7 +136,7 @@ class InviteCreateApi(Resource):
         # trigger不用指定了，默认就是date
         from app.tasks.invite_task import send_sms_to_vistor
 
-        job = scheduler.add_job("sned_sms_to_vistor", send_sms_to_vistor, args=(invite.visitor_mobile,))
+        job = scheduler.add_job("send_sms_to_vistor", send_sms_to_vistor, args=(invite.visitor_mobile,))
         print("jobid", job.id)
 
         return "InviteCreateApi"

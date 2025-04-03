@@ -6,6 +6,6 @@ urlpatterns = [
     ("/", InviteListApi),
     ("/<invite_id>/", InviteDetailApi),
     ("/create/", InviteCreateApi),
-    ("/<invite_id>/", InviteUpdateApi),
+    ("/<invite_id>/update/", InviteUpdateApi),
     ("/<invite_id>/status_update/", InviteStatusUpdateApi),
 ]

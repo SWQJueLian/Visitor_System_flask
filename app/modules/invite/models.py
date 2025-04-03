@@ -26,7 +26,7 @@ class Invite(BaseModel):
     visitor_car_number = sa.Column(sa.String(10), nullable=True)
     visitor_reason = sa.Column(sa.String(50), nullable=True)
     visitor_unit = sa.Column(sa.String(20), nullable=True)
-    status = sa.Column(sa.SmallInteger, default=Status.NOT_VISITED)
+    status = sa.Column(sa.SmallInteger, default=Status.NOT_VISITED.value)
 
 
 class Employee(BaseModel):
